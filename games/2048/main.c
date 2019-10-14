@@ -7,8 +7,15 @@ int chessboard[CLENGTH][CLENGTH];
 int randInt [2] = {2, 4};
 
 void printChessBoard() {
+	printf("  ");
+	for (int i = 0; i < CLENGTH; ++i)
+	{
+		printf("%d ", i);
+	}
+	printf("\n");
+
 	for(int i = 0; i < CLENGTH; ++i){
-		printf("%d line:", i);
+		printf("%d:", i);
 		for (int j = 0; j < CLENGTH; ++j)
 		{
 			printf("%d ", chessboard[i][j]);
