@@ -6,11 +6,13 @@
 int chessboard[CLENGTH][CLENGTH];
 int randInt [2] = {2, 4};
 
+bool canMove = false;
+
 void printChessBoard() {
 	printf("  ");
 	for (int i = 0; i < CLENGTH; ++i)
 	{
-		printf("%d ", i);
+		printf("%d    ", i);
 	}
 	printf("\n");
 
@@ -18,7 +20,7 @@ void printChessBoard() {
 		printf("%d:", i);
 		for (int j = 0; j < CLENGTH; ++j)
 		{
-			printf("%d ", chessboard[i][j]);
+			printf("%d    ", chessboard[i][j]);
 		}
 
 		printf("\n");
@@ -35,6 +37,22 @@ void initChessBoard() {
 }
 
 void randGenerate() {
+	bool haveEmpty = false;
+	for(int i = 0; i < CLENGTH; ++i){
+		for (int j = 0; j < CLENGTH; ++j)
+		{
+			if (chessboard[i][j] == 0)
+			{
+				haveEmpty = true;
+			}		
+		}
+	}
+
+	if (!haveEmpty)
+	{
+		return;
+	}
+
 	while(1)
 	{
 		int l = rand() % 4;
@@ -46,61 +64,173 @@ void randGenerate() {
 	}
 }
 
-bool operate() {
-	int row;
-	int line;
-	int direction;
-	int movedValue;
-	int afterRow;
-	int afterLine;
+void moveUp(int board[4][4]) {
+	for(int j = 0; j < 4; ++j){
+		for (int i = 3; i >= 0; --i)
+		{
+			if (i != 0)
+			{
+				if (board[i-1][j] == 0 && board[i][j] != 0) {
+					board[i-1][j]	= board[i][j];
+					board[i][j] = 0;
+					canMove = true;
+				} else if (board[i-1][j] == board[i][j]) {
+					board[i-1][j] = board[i-1][j] + board[i][j];
+					board[i][j] = 0;
+					canMove = true;
+				} else if (board[i][j] == 0) {
+					canMove = true;	
+				}
+			}
+		}
+	}
+}
 
-	printf("Please begin your row:\n");
-    scanf("%d",&row);
+void moveDown(int board[4][4]) {
+	for(int j = 0; j < 4; ++j){
+		for (int i = 0; i < 4; ++i)
+		{
+			if (i != 3)
+			{
+				if (board[i+1][j] == 0 && board[i][j] != 0) {
+					board[i+1][j]	= board[i][j];
+					board[i][j] = 0;
+					canMove = true;
+				} else if (board[i+1][j] == board[i][j]) {
+					board[i+1][j] = board[i+1][j] + board[i][j];
+					board[i][j] = 0;
+					canMove = true;	
+				} else if (board[i][j] == 0) {
+					canMove = true;	
+				}
+			}
+		}
+	}
+}
 
-    if (row == -1) {
-    	return false;
+void moveLeft(int board[4][4]) {
+	for (int i = 0; i < 4; ++i){
+		for(int j = 3; j >= 0; --j){
+			if (j != 0)
+			{
+				if (board[i][j-1] == 0 && board[i][j] != 0) {
+					board[i][j-1]	= board[i][j];
+					board[i][j] = 0;
+					canMove = true;
+				} else if (board[i][j-1] == board[i][j]) {
+					board[i][j-1] = board[i][j-1] + board[i][j];
+					board[i][j] = 0;
+					canMove = true;
+				} else if (board[i][j] == 0) {
+					canMove = true;	
+				}
+			}
+		}
+	}
+}
+
+void moveRight(int board[4][4]) {
+	for (int i = 0; i < 4; ++i){
+		for(int j = 0; j < 4; ++j){
+			if (j != 3)
+			{
+				if (board[i][j+1] == 0 && board[i][j] != 0) {
+					board[i][j+1]	= board[i][j];
+					board[i][j] = 0;
+					canMove = true;
+				} else if (board[i][j+1] == board[i][j]) {
+					board[i][j+1] = board[i][j+1] + board[i][j];
+					board[i][j] = 0;
+					canMove = true;
+				} else if (board[i][j] == 0) {
+					canMove = true;	
+				}
+			}
+		}
+	}
+}
+
+
+bool gameOver() {
+    int copy_board[4][4],i,j;
+    /*为了避免直接把board[][]传进move函数判断的时候改变board，所以把board复制给
+    另一个数组,然后判断，这样就不会改变board数组了
+    */
+    for(i=0;i<4;i++)
+    {
+        for(j=0;j<4;j++)
+        {
+            copy_board[i][j]=chessboard[i][j];
+        }
     }
 
-	printf("Please begin your line:\n");
-    scanf("%d",&line);
+	canMove = false;
+
+	moveDown(copy_board);
+	printf("moveDown canMode:%d\n", canMove);
+
+	moveUp(copy_board);
+	printf("moveUp canMode:%d\n", canMove);
+
+	moveLeft(copy_board);
+	printf(" moveLeftcanMode:%d\n", canMove);
+
+	moveRight(copy_board);
+
+	printf("moveRight canMode:%d\n", canMove);
+    if (!canMove)
+	{
+        return true;
+	}
+
+	return false;
+}
+
+bool checkWin() {
+	for(int i = 0; i < CLENGTH; ++i){
+		for (int j = 0; j < CLENGTH; ++j)
+		{
+			if (chessboard[i][j] == 2048)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool operate() {
+	int direction;
 
 	printf("Please select direction(1,2,3,4 => up，down, left, right):\n");
     scanf("%d",&direction);	
 
 	 switch (direction){
 	        case 1:
-	        	afterLine = line;
-	        	afterRow = row-1;
+	        	moveUp(chessboard);
 	        	break;
 	        case 2:
-	        	afterLine = line;
-	        	afterRow = row+1;
+	        	moveDown(chessboard);				
 	        	break;
 	        case 3:
-	        	afterLine = line-1;
-	        	afterRow = row;
+	        	moveLeft(chessboard);	
 	        	break;
 	        case 4:
-	        	afterLine = line+1;
-	        	afterRow = row;
+	        	moveRight(chessboard);
 	        	break;
 	        default:printf("error\n");
     }
 
-    if (afterRow < 0 or afterRow > CLENGTH or afterLine < 0 or afterLine > CLENGTH)
-    {
-		printf("cross the border");
-		return false;
+    if (checkWin()) {
+    	printf("you win");
+    	return false;
     }
 
-	chessboard[afterRow][afterLine] = chessboard[row][line] + chessboard[afterRow][afterLine];
-	chessboard[row][line] = 0;
-
-	if ((chessboard[afterRow][afterLine] & chessboard[afterRow][afterLine] - 1) != 0)
-		{
-			printf("can't move");
-			return false;
-	}
+    if (gameOver())
+    {
+    	printf("you lose");
+    	return false;
+    }
 
 	randGenerate();	
 
