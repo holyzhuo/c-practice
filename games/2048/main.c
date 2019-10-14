@@ -167,17 +167,10 @@ bool gameOver() {
 	canMove = false;
 
 	moveDown(copy_board);
-	printf("moveDown canMode:%d\n", canMove);
-
 	moveUp(copy_board);
-	printf("moveUp canMode:%d\n", canMove);
-
 	moveLeft(copy_board);
-	printf(" moveLeftcanMode:%d\n", canMove);
-
 	moveRight(copy_board);
 
-	printf("moveRight canMode:%d\n", canMove);
     if (!canMove)
 	{
         return true;
